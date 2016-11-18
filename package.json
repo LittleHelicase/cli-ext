@@ -1,10 +1,10 @@
 {
-  "name": "cli-inputs",
+  "name": "cli-ext",
   "version": "1.0.0",
-  "description": "Methods for handling inputs in CLIs",
+  "description": "CLI extensions for a rich user interface.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "keywords": [
     "CLI"
