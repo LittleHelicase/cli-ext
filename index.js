@@ -63,6 +63,16 @@ const editContent = (initialContent, fileType, verify) => {
   })
 }
 
+function fileStdinOrEdit (file, {inStream = process.stdin, fileType = '.json', defaultContent = '', verify = null}) {
+  if (file && file.length > 0) {
+    return getFileContents(file)
+  } else if (!process.stdin.isTTY) {
+    return getStdin()
+  } else {
+    return editContent(defaultContent, fileType, verify)
+  }
+}
+
 /**
  * Gets the input for a CLI process by
  *
@@ -75,18 +85,13 @@ const editContent = (initialContent, fileType, verify) => {
  * @params [inStream] An input stream. If none is given `process.stdin` will be used.
  * @returns {Promise<string>} Returns a promise that resolves the input string
  */
-function fileStdinOrEdit (file, {inStream = process.stdin, fileType = '.json', defaultContent = '', verify = null}) {
-  if (file && file.length > 0) {
-    return getFileContents(file)
-  } else if (!process.stdin.isTTY) {
-    return getStdin()
-  } else {
-    editContent(defaultContent, fileType, verify)
-  }
+function input (file, conf) {
+  conf = conf || {}
+  return fileStdinOrEdit(file, conf)
 }
 
 module.exports = {
-  input: fileStdinOrEdit,
+  input,
   edit,
   editContent
 }
