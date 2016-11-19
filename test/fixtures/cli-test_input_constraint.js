@@ -6,7 +6,7 @@ if (process.argv.length > 2) {
   var outFile = process.argv[process.argv.length - 1]
   var log = (what) => fs.writeFileSync(outFile, what)
 }
-cliExt.input()
+cliExt.input(null, {verify: (text) => text.length < 7})
 .then(log)
 .catch((err) => {
   log(err)

@@ -4,13 +4,12 @@ const getStdin = require('get-stdin')
 const spawn = require('child_process').spawn
 const tempfile = require('tempfile')
 const prompt = require('prompt-promise')
+const resolvePath = require('path').resolve
 
 function getFileContents (file) {
   return new Promise((resolve, reject) => {
-    fs.exists(file, (err, exists) => {
-      if (err) {
-        reject(err)
-      } else {
+    fs.exists(file, (exists) => {
+      if (exists) {
         fs.readFile(file, 'utf8', (err, contents) => {
           if (err) {
             reject(err)
@@ -18,9 +17,18 @@ function getFileContents (file) {
             resolve(contents)
           }
         })
+      } else {
+        reject('File does not exist: ' + resolvePath(file))
       }
     })
   })
+}
+
+function trimNewLine (str) {
+  if (str[str.length -1] === '\n') {
+    return str.slice(0, -1)
+  }
+  return str
 }
 
 const edit = (file) => {
@@ -36,7 +44,7 @@ const edit = (file) => {
         }
       })
     })
-  })
+  }).then(trimNewLine)
 }
 
 const editContent = (initialContent, fileType, verify) => {
@@ -66,8 +74,10 @@ const editContent = (initialContent, fileType, verify) => {
 function fileStdinOrEdit (file, {inStream = process.stdin, fileType = '.json', defaultContent = '', verify = null}) {
   if (file && file.length > 0) {
     return getFileContents(file)
+    .then((text) => (!verify || verify(text)) ? text : Promise.reject('Contents do not satisfy constraints.'))
   } else if (!process.stdin.isTTY) {
-    return getStdin()
+    return getStdin().then(trimNewLine)
+    .then((text) => (!verify || verify(text)) ? text : Promise.reject('Contents do not satisfy constraints.'))
   } else {
     return editContent(defaultContent, fileType, verify)
   }

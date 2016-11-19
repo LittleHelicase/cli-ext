@@ -79,19 +79,19 @@ test('[editContents] Prompts the user for input', async (t) => {
   process.env.EDITOR = 'vi' // ensure vi usage
   var tmpFile = tempfile()
   var contents = await writeContentsTo('edit', 'node test/fixtures/cli-test_editContent.js', tmpFile)
-  t.is(contents, 'edit\n')
+  t.is(contents, 'edit')
 })
 
 test('[edit] Prompts the user for input', async (t) => {
   process.env.EDITOR = 'vi' // ensure vi usage
   var tmpFile = tempfile()
   var contents = await writeContentsTo('edit', 'node test/fixtures/cli-test_edit.js', tmpFile)
-  t.is(contents, 'edit\n')
+  t.is(contents, 'edit')
 })
 
 test('[input] Prompts the user if no other method is valid.', async (t) => {
   process.env.EDITOR = 'vi' // ensure vi usage
   var tmpFile = tempfile()
   var contents = await writeContentsTo('edit', 'node test/fixtures/cli-test_input.js', tmpFile)
-  t.is(contents, 'edit\n')
+  t.is(contents, 'edit')
 })

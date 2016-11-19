@@ -33,6 +33,11 @@ cliExt.edit('./config.json')
 // opens an editor to edit the given text
 cliExt.editContent('text to display in the editor')
 .then((text) => ...)
+
+// use a function to verify the contents of the input.
+// Here we want to ensure that the content is at least 100 characters long
+cliExt.input(process.argv[2], {verify: (content) => content.length > 100})
+.then((text) => ...)
 ```
 
 # API
