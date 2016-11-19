@@ -12,9 +12,12 @@
   "author": "Maximilian Klein",
   "license": "MIT",
   "dependencies": {
-    "ava": "^0.17.0",
     "get-stdin": "^5.0.1",
     "prompt-promise": "^1.0.3",
     "tempfile": "^1.1.1"
+  },
+  "devDependencies": {
+    "ava": "^0.17.0",
+    "pty.js": "^0.3.1"
   }
 }
