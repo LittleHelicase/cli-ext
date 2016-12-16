@@ -1,6 +1,6 @@
 {
   "name": "cli-ext",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI extensions for a rich user interface.",
   "main": "index.js",
   "scripts": {
