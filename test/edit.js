@@ -3,7 +3,6 @@ import test from 'ava'
 import pty from 'pty.js'
 import tempfile from 'tempfile'
 import fs from 'fs'
-import * as cliExt from '../index.js'
 import {dropWhile, negate} from 'lodash'
 
 // use a custom bashrc to ensure determinism
@@ -36,7 +35,7 @@ const writeContentsTo = (contents, call, tmpFile) => {
       if (data.indexOf('exit') === -1) {
         setTimeout(() => term.write('exit\n'), 1000)
       }
-      if(data === 'exit\r\n') {
+      if (data === 'exit\r\n') {
         term.destroy()
       }
     })

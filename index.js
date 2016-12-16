@@ -51,24 +51,26 @@ const editContent = (initialContent, fileType, verify) => {
   var tmpFile = tempfile(fileType)
   fs.writeFileSync(tmpFile, initialContent, 'utf8')
   return edit(tmpFile)
-  .then((content) => {
-    if (!verify || verify(content)) {
-      fs.unlinkSync(tmpFile)
-      return content
-    } else {
-      return prompt('You entered a not valid document. Do you want to continue (c), reset (r) or abort (a): ')
-      .then((res) => {
-        process.stdin.pause()
-        if (res === 'c') {
-          return editContent(content, fileType, verify)
-        } else if (res === 'r') {
-          return editContent(initialContent, fileType, verify)
-        } else {
-          throw new Error('User aborted editing.')
-        }
-      })
-    }
-  })
+  .then((content) => ((!verify) ? Promise.resolve(true) : Promise.resolve(verify(content)))
+    .then((isOk) => {
+      if (isOk) {
+        fs.unlinkSync(tmpFile)
+        return content
+      } else {
+        return prompt('You entered a not valid document. Do you want to continue (c), reset (r) or abort (a): ')
+        .then((res) => {
+          process.stdin.pause()
+          if (res === 'c') {
+            return editContent(content, fileType, verify)
+          } else if (res === 'r') {
+            return editContent(initialContent, fileType, verify)
+          } else {
+            throw new Error('User aborted editing.')
+          }
+        })
+      }
+    })
+  )
 }
 
 function fileStdinOrEdit (file, {inStream = process.stdin, fileType = '.json', defaultContent = '', verify = null}) {
