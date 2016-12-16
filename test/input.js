@@ -24,6 +24,16 @@ test('[input] Accepts file if it fulfills the verify constraints', (t) => {
 test('[input] Rejects file if it violates the verify constraints', (t) =>
   t.throws(cliExt.input('test/fixtures/bashrc', {verify: (text) => text.length > 1000})))
 
+test('[input] Verifies input via promises.', (t) => {
+  t.plan(1)
+  return cliExt.input('test/fixtures/bashrc', {verify: (text) => Promise.resolve(text.length > 1)})
+  .then(() => t.pass())
+})
+
+test('[input] Rejects input via promises.', (t) => {
+  t.throws(cliExt.input('test/fixtures/bashrc', {verify: (text) => Promise.resolve(text.length < 1)}))
+})
+
 const runCLI = (prog, args, data) => {
   return new Promise((resolve, reject) => {
     var cli = exec('node ' + prog + ' ' + args,

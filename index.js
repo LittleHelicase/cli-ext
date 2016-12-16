@@ -51,7 +51,12 @@ const editContent = (initialContent, fileType, verify) => {
   var tmpFile = tempfile(fileType)
   fs.writeFileSync(tmpFile, initialContent, 'utf8')
   return edit(tmpFile)
-  .then((content) => ((!verify) ? Promise.resolve(true) : Promise.resolve(verify(content)))
+  .then((content) => {
+    var verifyPromise = Promise.resolve(true)
+    if (verify) {
+      verifyPromise = Promise.resolve(verify(content))
+    }
+    return verifyPromise
     .then((isOk) => {
       if (isOk) {
         fs.unlinkSync(tmpFile)
@@ -70,16 +75,30 @@ const editContent = (initialContent, fileType, verify) => {
         })
       }
     })
-  )
+  })
 }
 
 function fileStdinOrEdit (file, {inStream = process.stdin, fileType = '.json', defaultContent = '', verify = null}) {
   if (file && file.length > 0) {
     return getFileContents(file)
-    .then((text) => (!verify || verify(text)) ? text : Promise.reject('Contents do not satisfy constraints.'))
+    .then((content) => {
+      var verifyPromise = Promise.resolve(true)
+      if (verify) {
+        verifyPromise = Promise.resolve(verify(content))
+      }
+      return verifyPromise
+      .then((valid) => (valid) ? content : Promise.reject('Contents do not satisfy constraints.'))
+    })
   } else if (!process.stdin.isTTY) {
     return getStdin().then(trimNewLine)
-    .then((text) => (!verify || verify(text)) ? text : Promise.reject('Contents do not satisfy constraints.'))
+    .then((content) => {
+      var verifyPromise = Promise.resolve(true)
+      if (verify) {
+        verifyPromise = Promise.resolve(verify(content))
+      }
+      return verifyPromise
+      .then((valid) => (valid) ? content : Promise.reject('Contents do not satisfy constraints.'))
+    })
   } else {
     return editContent(defaultContent, fileType, verify)
   }
